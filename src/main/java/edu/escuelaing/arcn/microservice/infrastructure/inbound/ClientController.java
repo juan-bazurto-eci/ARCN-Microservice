@@ -1,6 +1,7 @@
 package edu.escuelaing.arcn.microservice.infrastructure.inbound;
 
 import edu.escuelaing.arcn.microservice.application.ClientService;
+import edu.escuelaing.arcn.microservice.domain.exceptions.PaymentMethodException;
 import edu.escuelaing.arcn.microservice.domain.model.Client;
 import edu.escuelaing.arcn.microservice.domain.model.PaymentMethod;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,7 @@ public class ClientController {
     }
 
     @PostMapping
-    public ResponseEntity<Client> createClient(@RequestBody Client client) {
+    public ResponseEntity<Client> createClient(@RequestBody Client client) throws PaymentMethodException {
         Client createdClient = clientService.createClient(client.getName(), client.getEmail(), client.getAddress(), client.getPaymentDetails());
         return new ResponseEntity<>(createdClient, HttpStatus.CREATED);
     }
@@ -31,7 +32,7 @@ public class ClientController {
     }
 
     @PutMapping("/{clientId}/payment-method")
-    public ResponseEntity<Client> updateClientPaymentMethod(@PathVariable String clientId, @RequestBody PaymentMethod newPaymentMethod) {
+    public ResponseEntity<Client> updateClientPaymentMethod(@PathVariable String clientId, @RequestBody PaymentMethod newPaymentMethod) throws PaymentMethodException {
         Client updatedClient = clientService.updatePaymentMethod(clientId, newPaymentMethod);
         return new ResponseEntity<>(updatedClient, HttpStatus.OK);
     }

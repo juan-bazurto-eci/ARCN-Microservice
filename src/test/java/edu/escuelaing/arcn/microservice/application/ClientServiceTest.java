@@ -1,5 +1,6 @@
 package edu.escuelaing.arcn.microservice.application;
 
+import edu.escuelaing.arcn.microservice.domain.exceptions.PaymentMethodException;
 import edu.escuelaing.arcn.microservice.domain.model.Client;
 import edu.escuelaing.arcn.microservice.domain.model.PaymentMethod;
 import edu.escuelaing.arcn.microservice.domain.repository.ClientRepository;
@@ -9,6 +10,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -29,9 +33,10 @@ class ClientServiceTest {
     }
 
     @Test
-    void createClientTest() {
+    void createClientTest() throws PaymentMethodException {
         // Arrange
-        PaymentMethod paymentMethod = new PaymentMethod("1234567890123456", null, "John Doe", "123");
+        
+        PaymentMethod paymentMethod = new PaymentMethod("371449635398431", Date.from(LocalDate.now().plusDays(120).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()), "John Doe", "123");
         Client expectedClient = new Client("John Doe", "john@example.com", "Address", paymentMethod);
         when(clientRepository.save(any(Client.class))).thenReturn(expectedClient);
 
@@ -75,10 +80,10 @@ class ClientServiceTest {
     }
 
     @Test
-    void updatePaymentMethodTest() {
+    void updatePaymentMethodTest() throws PaymentMethodException {
         // Arrange
         String clientId = "123";
-        PaymentMethod newPaymentMethod = new PaymentMethod("1234567890123456", null, "John Doe", "123");
+        PaymentMethod newPaymentMethod = new PaymentMethod("371449635398431", Date.from(LocalDate.now().plusDays(120).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()), "John Doe", "123");
         Client client = new Client("John Doe", "john@example.com", "Address", null);
         when(clientRepository.findById(clientId)).thenReturn(Optional.of(client));
         when(clientRepository.save(client)).thenReturn(client);
