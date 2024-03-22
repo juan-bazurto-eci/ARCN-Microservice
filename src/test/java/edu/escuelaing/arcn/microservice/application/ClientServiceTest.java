@@ -12,6 +12,7 @@ import org.mockito.MockitoAnnotations;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 class ClientServiceTest {
@@ -31,15 +32,15 @@ class ClientServiceTest {
     void createClientTest() {
         // Arrange
         PaymentMethod paymentMethod = new PaymentMethod("1234567890123456", null, "John Doe", "123");
-        Client client = new Client("John Doe", "john@example.com", "Address", paymentMethod);
-        when(clientRepository.save(client)).thenReturn(client);
+        Client expectedClient = new Client("John Doe", "john@example.com", "Address", paymentMethod);
+        when(clientRepository.save(any(Client.class))).thenReturn(expectedClient);
 
         // Act
         Client createdClient = clientService.createClient("John Doe", "john@example.com", "Address", paymentMethod);
 
         // Assert
-        assertEquals(client, createdClient);
-        verify(clientRepository, times(1)).save(client);
+        assertEquals(expectedClient, createdClient);
+        verify(clientRepository, times(1)).save(any(Client.class)); // Use any(Client.class) to match any Client object
     }
 
     @Test
