@@ -6,14 +6,14 @@ public class PaymentMethod {
     private Long id;
     private String cardNumber;
     private Date expirationDate;
-    private String holderName;
-    private String ccv;
+    private String cardHolderName;
+    private String cvv;
 
-    public PaymentMethod(String cardNumber, Date expirationDate, String holderName, String ccv){
+    public PaymentMethod(String cardNumber, Date expirationDate, String cardHolderName, String cvv){
         this.cardNumber=cardNumber;
         this.expirationDate=expirationDate;
-        this.holderName= holderName;
-        this.ccv=ccv;
+        this.cardHolderName= cardHolderName;
+        this.cvv=cvv;
     }
 
     public Long getId() {
@@ -41,19 +41,19 @@ public class PaymentMethod {
     }
 
     public String getHolderName() {
-        return holderName;
+        return cardHolderName;
     }
 
-    public void setHolderName(String holderName) {
-        this.holderName = holderName;
+    public void setHolderName(String cardHolderName) {
+        this.cardHolderName = cardHolderName;
     }
 
     public String getCcv() {
-        return ccv;
+        return cvv;
     }
 
-    public void setCcv(String ccv) {
-        this.ccv = ccv;
+    public void setCcv(String cvv) {
+        this.cvv = cvv;
     }
 
     @Override
@@ -62,8 +62,8 @@ public class PaymentMethod {
                 "id=" + id +
                 ", cardNumber='" + cardNumber + '\'' +
                 ", expirationDate=" + expirationDate +
-                ", holderName='" + holderName + '\'' +
-                ", ccv='" + ccv + '\'' +
+                ", holderName='" + cardHolderName + '\'' +
+                ", ccv='" + cvv + '\'' +
                 '}';
     }
 }
