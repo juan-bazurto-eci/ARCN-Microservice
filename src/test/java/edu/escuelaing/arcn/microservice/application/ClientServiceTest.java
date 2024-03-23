@@ -45,7 +45,7 @@ class ClientServiceTest {
 
         // Assert
         assertEquals(expectedClient, createdClient);
-        verify(clientRepository, times(1)).save(any(Client.class)); // Use any(Client.class) to match any Client object
+        verify(clientRepository, times(1)).save(any(Client.class));
     }
 
     @Test

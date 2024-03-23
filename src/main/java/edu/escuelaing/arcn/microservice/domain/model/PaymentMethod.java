@@ -1,9 +1,12 @@
 package edu.escuelaing.arcn.microservice.domain.model;
 
+import org.springframework.data.annotation.Id;
+
 import java.util.Date;
 
 public class PaymentMethod {
-    private Long id;
+    @Id
+    private String id;
     private String cardNumber;
     private Date expirationDate;
     private String cardHolderName;
@@ -16,11 +19,11 @@ public class PaymentMethod {
         this.cvv=cvv;
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
