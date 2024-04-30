@@ -9,15 +9,11 @@ import edu.escuelaing.arcn.microservice.domain.model.ShippingAddress;
 import lombok.Data;
 
 @Data
-@Document("clients")
 public class ClientResponseDTO {
-    @Id
-    private String id;
-    @Indexed(unique = true)
+
     private final String username;
     private final String firstName;
     private final String lastName;
-    @Indexed(unique = true)
     private final String email;
     private final String country;
     private final String phoneNumber;
