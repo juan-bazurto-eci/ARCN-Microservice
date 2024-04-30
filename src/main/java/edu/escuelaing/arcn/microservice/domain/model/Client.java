@@ -1,71 +1,40 @@
 package edu.escuelaing.arcn.microservice.domain.model;
 
-
+import java.time.LocalDate;
+import lombok.Data;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
+@Data
+@Document("clients")
 public class Client {
     @Id
     private String id;
-    private String name;
+    @Indexed(unique = true)
+    private String username;
+    private String firstName;
+    private String lastName;
+    @Indexed(unique = true)
     private String email;
-    private String address;
-    private PaymentMethod paymentDetails;
+    private String passwordHash;
+    private String country;
+    private String phoneNumber;
+    private LocalDate birthDate;
+    private ShippingAddress shippingAddress;
+    private PaymentMethod paymentMethod;
 
-    public Client(String name, String email, String address, PaymentMethod paymentDetails){
-        this.name=name;
+    public Client(String username, String firstName, String lastName, String email, String passwordHash, String country, String phoneNumber, LocalDate birthDate, ShippingAddress shippingAddress, PaymentMethod paymentMethod){
+        this.username = username;
+        this.firstName=firstName;
+        this.lastName=lastName;
         this.email=email;
-        this.address=address;
-        this.paymentDetails=paymentDetails;
+        this.passwordHash = passwordHash;
+        this.country = country;
+        this.phoneNumber=phoneNumber;
+        this.birthDate=birthDate;
+        this.shippingAddress=shippingAddress;
+        this.paymentMethod=paymentMethod;
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public PaymentMethod getPaymentDetails() {
-        return paymentDetails;
-    }
-
-    public void setPaymentDetails(PaymentMethod paymentDetails) {
-        this.paymentDetails = paymentDetails;
-    }
-
-    @Override
-    public String toString() {
-        return "Client{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", email='" + email + '\'' +
-                ", address='" + address + '\'' +
-                ", paymentDetails='" + paymentDetails + '\'' +
-                '}';
-    }
 }
