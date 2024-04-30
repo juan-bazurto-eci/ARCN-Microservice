@@ -28,24 +28,21 @@ public class ClientService {
         this.clientRepository = clientRepository;
     }
 
-    public ClientResponseDTO registerClient(String username, String firstName, String lastName, String email, String password,
-            String country, String phoneNumber, LocalDate birthDate, ShippingAddress shippingAddress,
-            PaymentMethod paymentMethod) {
+    public ClientResponseDTO registerClient(Client client) {
 
-        Client client = clientInformationIsValid(username, firstName, lastName, email, password, country,
-                password, birthDate, shippingAddress, paymentMethod);
+        client = clientInformationIsValid(client.getUsername(), client.getFirstName(), client.getLastName(), client.getEmail(), client.getCountry(), client.getCountry(), client.getPhoneNumber(), client.getBirthDate(), client.getShippingAddress(), client.getPaymentMethod());
 
-        password = BCrypt.hashpw(password, BCrypt.gensalt(15));
+        String password = BCrypt.hashpw(client.getPasswordHash(), BCrypt.gensalt(15));
 
         client.setPasswordHash(password);
 
         return ClientMapper.toResponseDTO(clientRepository.save(client));
     }
 
-    public ClientResponseDTO updateClient(ClientRequestDTO client) {
+    public ClientResponseDTO updateClient(Client client) {
 
         Client updatedClient = clientInformationIsValid(client.getUsername(), client.getFirstName(),
-                client.getLastName(), client.getEmail(), client.getPassword(), client.getCountry(),
+                client.getLastName(), client.getEmail(), client.getPasswordHash(), client.getCountry(),
                 client.getPhoneNumber(), client.getBirthDate(), client.getShippingAddress(), client.getPaymentMethod());
 
         return ClientMapper.toResponseDTO(clientRepository.save(updatedClient));

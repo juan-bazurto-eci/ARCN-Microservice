@@ -7,6 +7,7 @@ import edu.escuelaing.arcn.microservice.domain.model.PaymentMethod;
 import edu.escuelaing.arcn.microservice.domain.model.ShippingAddress;
 import edu.escuelaing.arcn.microservice.dto.ClientRequestDTO;
 import edu.escuelaing.arcn.microservice.dto.ClientResponseDTO;
+import edu.escuelaing.arcn.microservice.mapper.ClientMapper;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,8 @@ public class ClientController {
 
     @PostMapping
     public ResponseEntity<ClientResponseDTO> registerClient(@RequestBody ClientRequestDTO clientRequestDTO) throws PaymentMethodException {
-        ClientResponseDTO createdClient = clientService.registerClient(clientRequestDTO.getUsername(), clientRequestDTO.getFirstName(), clientRequestDTO.getLastName(), clientRequestDTO.getEmail(), clientRequestDTO.getPassword(), clientRequestDTO.getCountry(), clientRequestDTO.getPhoneNumber(), clientRequestDTO.getBirthDate(), clientRequestDTO.getShippingAddress(), clientRequestDTO.getPaymentMethod());
+        Client client = ClientMapper.toEntity(clientRequestDTO);
+        ClientResponseDTO createdClient = clientService.registerClient(client);
         return new ResponseEntity<>(createdClient, HttpStatus.CREATED);
     }
 
@@ -35,7 +37,8 @@ public class ClientController {
     }
 
     @PutMapping("/{clientUsername}")
-    public ResponseEntity<ClientResponseDTO> updateClient(@PathVariable String clientUsername, @RequestBody ClientRequestDTO client) {
+    public ResponseEntity<ClientResponseDTO> updateClient(@PathVariable String clientUsername, @RequestBody ClientRequestDTO clientRequestDTO) {
+        Client client = ClientMapper.toEntity(clientRequestDTO);
         ClientResponseDTO updatedClient = clientService.updateClient(client);
         return new ResponseEntity<>(updatedClient, HttpStatus.OK);
     }

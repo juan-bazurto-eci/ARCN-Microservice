@@ -52,7 +52,7 @@ class ClientServiceTest {
         Client client = new Client("john_doe_arcn", "John", "Doe", "john@example.com", "password", "colombia", "3132105755", birthDate, shippingAddress, paymentMethod);
         when(clientRepository.save(any(Client.class))).thenReturn(client);
 
-        ClientResponseDTO createdClient = clientService.registerClient("john_doe_arcn", "John", "Doe", "john@example.com", "johnspasswordhash", "colombia", "3132105755", birthDate, shippingAddress, paymentMethod);
+        ClientResponseDTO createdClient = clientService.registerClient(client);
 
         assertEquals(expectedClient, createdClient);
         verify(clientRepository, times(1)).save(any(Client.class));
@@ -63,10 +63,11 @@ class ClientServiceTest {
         PaymentMethod paymentMethod = new PaymentMethod("371449635398431", Date.from(LocalDate.now().plusDays(120).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()), "John Doe", "123");
         ShippingAddress shippingAddress = new ShippingAddress("John Doe", "3132105755", "cr 104 cll 148", "111111", "bogota");
         LocalDate birthDate = LocalDate.of(2003, Month.JULY, 8);
+        Client client = new Client("john_doe_arcn", "John", "Doe", "john@example.com", "password", "colombia", "3132105755", birthDate, shippingAddress, paymentMethod);
         when(clientRepository.save(any(Client.class))).thenThrow(new ClientServiceException(ClientServiceException.CLIENT_ALREADY_EXISTS));
 
         assertThrows(ClientServiceException.class, () -> {
-            clientService.registerClient("john_doe_arcn", "John", "Doe", "john@example.com", "johnspasswordhash", "colombia", "3132105755", birthDate, shippingAddress, paymentMethod);
+            clientService.registerClient(client);
         });
     }
 
@@ -76,9 +77,10 @@ class ClientServiceTest {
         ShippingAddress shippingAddress = new ShippingAddress("John Doe", "3132105755", "cr 104 cll 148", "111111", "bogota");
         LocalDate birthDate = LocalDate.of(2003, Month.JULY, 8);
         when(clientRepository.save(any(Client.class))).thenThrow(new ClientServiceException(ClientServiceException.EMAIL_ALREADY_TAKEN));
+        Client client = new Client("john_doe_arcn", "John", "Doe", "john@example.com", "password", "colombia", "3132105755", birthDate, shippingAddress, paymentMethod);
 
         assertThrows(ClientServiceException.class, () -> {
-            clientService.registerClient("john_doe_arcn", "John", "Doe", "john@example.com", "johnspasswordhash", "colombia", "3132105755", birthDate, shippingAddress, paymentMethod);
+            clientService.registerClient(client);
         });
     }
     
@@ -88,9 +90,10 @@ class ClientServiceTest {
         PaymentMethod paymentMethod = new PaymentMethod("371449398431", Date.from(LocalDate.now().plusDays(120).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()), "John Doe", "13");
         ShippingAddress shippingAddress = new ShippingAddress("John Doe", "3132105755", "cr 104 cll 148", "111111", "bogota");
         LocalDate birthDate = LocalDate.of(2003, Month.JULY, 8);
+        Client client = new Client("john_doe_arcn", "John", "Doe", "john@example.com", "password", "colombia", "3132105755", birthDate, shippingAddress, paymentMethod);
 
         assertThrows(PaymentMethodException.class, () -> {
-            clientService.registerClient("john_doe_arcn", "John", "Doe", "john@example.com", "johnspasswordhash", "colombia", "3132105755", birthDate, shippingAddress, paymentMethod);
+            clientService.registerClient(client);
         });
     }
 
@@ -100,9 +103,10 @@ class ClientServiceTest {
         PaymentMethod paymentMethod = new PaymentMethod("371449635398431", date, "John Doe", "13");
         ShippingAddress shippingAddress = new ShippingAddress("John Doe", "3132105755", "cr 104 cll 148", "111111", "bogota");
         LocalDate birthDate = LocalDate.of(2003, Month.JULY, 8);
+        Client client = new Client("john_doe_arcn", "John", "Doe", "john@example.com", "password", "colombia", "3132105755", birthDate, shippingAddress, paymentMethod);
 
         assertThrows(PaymentMethodException.class, () -> {
-            clientService.registerClient("john_doe_arcn", "John", "Doe", "john@example.com", "johnspasswordhash", "colombia", "3132105755", birthDate, shippingAddress, paymentMethod);
+            clientService.registerClient(client);
         });
     }
 
@@ -111,9 +115,10 @@ class ClientServiceTest {
         PaymentMethod paymentMethod = new PaymentMethod("371449635398431", Date.from(LocalDate.now().plusDays(120).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()), "John Doe", "123");
         ShippingAddress shippingAddress = new ShippingAddress("John Doe", "3132105755", "cr 104 cll 148", "111111", "bogota");
         LocalDate birthDate = LocalDate.of(2003, Month.JULY, 8);
+        Client client = new Client("", "John", "Doe", "john@example.com", "password", "colombia", "3132105755", birthDate, shippingAddress, paymentMethod);
 
         assertThrows(ClientServiceException.class, () -> {
-            clientService.registerClient("", "John", "Doe", "john@example.com", "johnspasswordhash", "colombia", "3132105755", birthDate, shippingAddress, paymentMethod);
+            clientService.registerClient(client);
         });
     }
 
@@ -121,9 +126,10 @@ class ClientServiceTest {
     void Should_ThrowException_IfShippingAddressIsNull() throws ParseException {
         PaymentMethod paymentMethod = new PaymentMethod("371449635398431", Date.from(LocalDate.now().plusDays(120).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()), "John Doe", "123");
         LocalDate birthDate = LocalDate.of(2003, Month.JULY, 8);
+        Client client = new Client("john_doe_arcn", "John", "Doe", "john@example.com", "password", "colombia", "3132105755", birthDate,null, paymentMethod);
 
         assertThrows(ShippingAddressException.class, () -> {
-            clientService.registerClient("john_doe_arcn", "John", "Doe", "john@example.com", "johnspasswordhash", "colombia", "3132105755", birthDate, null, paymentMethod);
+            clientService.registerClient(client);
         });
     }
 
@@ -131,9 +137,10 @@ class ClientServiceTest {
     void Should_ThrowException_IfPaymentMethodIsNull() throws ParseException {
         ShippingAddress shippingAddress = new ShippingAddress("John Doe", "3132105755", "cr 104 cll 148", "111111", "bogota");
         LocalDate birthDate = LocalDate.of(2003, Month.JULY, 8);
+        Client client = new Client("john_doe_arcn", "John", "Doe", "john@example.com", "password", "colombia", "3132105755", birthDate, shippingAddress, null);
 
         assertThrows(PaymentMethodException.class, () -> {
-            clientService.registerClient("john_doe_arcn", "John", "Doe", "john@example.com", "johnspasswordhash", "colombia", "3132105755", birthDate, shippingAddress, null);
+            clientService.registerClient(client);
         });
     }
 
