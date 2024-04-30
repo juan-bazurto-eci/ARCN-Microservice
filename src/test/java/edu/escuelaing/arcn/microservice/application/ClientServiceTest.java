@@ -1,6 +1,8 @@
 package edu.escuelaing.arcn.microservice.application;
 
+import edu.escuelaing.arcn.microservice.domain.exceptions.ClientServiceException;
 import edu.escuelaing.arcn.microservice.domain.exceptions.PaymentMethodException;
+import edu.escuelaing.arcn.microservice.domain.exceptions.ShippingAddressException;
 import edu.escuelaing.arcn.microservice.domain.model.Client;
 import edu.escuelaing.arcn.microservice.domain.model.PaymentMethod;
 import edu.escuelaing.arcn.microservice.domain.model.ShippingAddress;
@@ -10,6 +12,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.ZoneId;
@@ -49,7 +54,7 @@ class ClientServiceTest {
     }
 
     @Test
-    void Should_ThrowException_IfMandatoryFieldsAreMissing() {
+    void Should_ThrowException_IfPaymentMethodIsWrong() {
         PaymentMethod paymentMethod = new PaymentMethod("371449398431", Date.from(LocalDate.now().plusDays(120).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()), "John Doe", "13");
         ShippingAddress shippingAddress = new ShippingAddress("John Doe", "3132105755", "cr 104 cll 148", "111111", "bogota");
         LocalDate birthDate = LocalDate.of(2003, Month.JULY, 8);
@@ -59,7 +64,48 @@ class ClientServiceTest {
         });
     }
 
+    @Test
+    void Should_ThrowException_IfExpirationDateIsWrong() throws ParseException {
+        Date date = new SimpleDateFormat("yyyy-MM-dd").parse("2024-01-27");
+        PaymentMethod paymentMethod = new PaymentMethod("371449635398431", date, "John Doe", "13");
+        ShippingAddress shippingAddress = new ShippingAddress("John Doe", "3132105755", "cr 104 cll 148", "111111", "bogota");
+        LocalDate birthDate = LocalDate.of(2003, Month.JULY, 8);
 
+        assertThrows(PaymentMethodException.class, () -> {
+            clientService.registerClient("john_doe_arcn", "John", "Doe", "john@example.com", "johnspasswordhash", "colombia", "3132105755", birthDate, shippingAddress, paymentMethod);
+        });
+    }
+
+    @Test
+    void Should_ThrowException_IfThereAreBlankFields() throws ParseException {
+        PaymentMethod paymentMethod = new PaymentMethod("371449635398431", Date.from(LocalDate.now().plusDays(120).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()), "John Doe", "123");
+        ShippingAddress shippingAddress = new ShippingAddress("John Doe", "3132105755", "cr 104 cll 148", "111111", "bogota");
+        LocalDate birthDate = LocalDate.of(2003, Month.JULY, 8);
+
+        assertThrows(ClientServiceException.class, () -> {
+            clientService.registerClient("", "John", "Doe", "john@example.com", "johnspasswordhash", "colombia", "3132105755", birthDate, shippingAddress, paymentMethod);
+        });
+    }
+
+    @Test
+    void Should_ThrowException_IfShippingAddressIsNull() throws ParseException {
+        PaymentMethod paymentMethod = new PaymentMethod("371449635398431", Date.from(LocalDate.now().plusDays(120).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()), "John Doe", "123");
+        LocalDate birthDate = LocalDate.of(2003, Month.JULY, 8);
+
+        assertThrows(ShippingAddressException.class, () -> {
+            clientService.registerClient("john_doe_arcn", "John", "Doe", "john@example.com", "johnspasswordhash", "colombia", "3132105755", birthDate, null, paymentMethod);
+        });
+    }
+
+    @Test
+    void Should_ThrowException_IfPaymentMethodIsNull() throws ParseException {
+        ShippingAddress shippingAddress = new ShippingAddress("John Doe", "3132105755", "cr 104 cll 148", "111111", "bogota");
+        LocalDate birthDate = LocalDate.of(2003, Month.JULY, 8);
+
+        assertThrows(PaymentMethodException.class, () -> {
+            clientService.registerClient("john_doe_arcn", "John", "Doe", "john@example.com", "johnspasswordhash", "colombia", "3132105755", birthDate, shippingAddress, null);
+        });
+    }
 
     /*
     @Test

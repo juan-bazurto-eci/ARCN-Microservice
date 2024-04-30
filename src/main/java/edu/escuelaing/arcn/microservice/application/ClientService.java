@@ -28,6 +28,10 @@ public class ClientService {
             String country, String phoneNumber, LocalDate birthDate, ShippingAddress shippingAddress,
             PaymentMethod paymentMethod) {
 
+        if (paymentMethod == null) {
+            throw new PaymentMethodException(PaymentMethodException.MISSING_PAYMENT_METHOD);
+        }
+
         if (!isValidCardNumber(paymentMethod.getCardNumber())) {
             throw new PaymentMethodException(PaymentMethodException.CARD_NUMBER_INVALID);
         }
@@ -70,7 +74,8 @@ public class ClientService {
             throw new PaymentMethodException(PaymentMethodException.EXPIRATION_DATE_INVALID);
         }
 
-        if (client.getUsername() == "" || client.getFirstName() == "" || client.getLastName() == "" || client.getEmail() == "" || client.getPasswordHash() == "" || client.getCountry() == ""
+        if (client.getUsername() == "" || client.getFirstName() == "" || client.getLastName() == ""
+                || client.getEmail() == "" || client.getPasswordHash() == "" || client.getCountry() == ""
                 || client.getPhoneNumber() == "") {
             throw new ClientServiceException(ClientServiceException.BLANK_FIELDS);
         }
@@ -149,9 +154,9 @@ public class ClientService {
         try {
             Algorithm algorithm = Algorithm.HMAC256("hello");
             String token = JWT.create()
-            .withClaim("username", username)
-            .withClaim("email", email)
-            .sign(algorithm);
+                    .withClaim("username", username)
+                    .withClaim("email", email)
+                    .sign(algorithm);
             return token;
         } catch (JWTCreationException e) {
             System.err.println("JWT was not created");
