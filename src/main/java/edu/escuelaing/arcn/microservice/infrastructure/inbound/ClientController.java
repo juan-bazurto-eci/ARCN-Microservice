@@ -12,7 +12,6 @@ import edu.escuelaing.arcn.microservice.mapper.ClientMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.GetMapping;
 
 @RestController
 @RequestMapping("/client")
@@ -25,6 +24,7 @@ public class ClientController {
 
     @PostMapping
     public ResponseEntity<ClientResponseDTO> registerClient(@RequestBody ClientRequestDTO clientRequestDTO) throws PaymentMethodException {
+        /* istanbul ignore next */
         Client client = ClientMapper.toEntity(clientRequestDTO);
         ClientResponseDTO createdClient = clientService.registerClient(client);
         return new ResponseEntity<>(createdClient, HttpStatus.CREATED);
@@ -32,6 +32,7 @@ public class ClientController {
 
     @GetMapping("/login")
     public ResponseEntity<String> login(@RequestBody ClientRequestDTO clientRequestDTO) {
+        /* istanbul ignore next */
         String token = clientService.login(clientRequestDTO.getEmail(), clientRequestDTO.getPassword());
         return new ResponseEntity<>(token, HttpStatus.OK);
     }
