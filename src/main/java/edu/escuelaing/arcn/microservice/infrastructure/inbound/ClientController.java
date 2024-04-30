@@ -23,14 +23,14 @@ public class ClientController {
     }
 
     @PostMapping
-    public ResponseEntity<ClientResponseDTO> registerClient(@RequestBody ClientRequestDTO client) throws PaymentMethodException {
-        ClientResponseDTO createdClient = clientService.registerClient(client.getUsername(), client.getFirstName(), client.getLastName(), client.getEmail(), client.getPassword(), client.getCountry(), client.getPhoneNumber(), client.getBirthDate(), client.getShippingAddress(), client.getPaymentMethod());
+    public ResponseEntity<ClientResponseDTO> registerClient(@RequestBody ClientRequestDTO clientRequestDTO) throws PaymentMethodException {
+        ClientResponseDTO createdClient = clientService.registerClient(clientRequestDTO.getUsername(), clientRequestDTO.getFirstName(), clientRequestDTO.getLastName(), clientRequestDTO.getEmail(), clientRequestDTO.getPassword(), clientRequestDTO.getCountry(), clientRequestDTO.getPhoneNumber(), clientRequestDTO.getBirthDate(), clientRequestDTO.getShippingAddress(), clientRequestDTO.getPaymentMethod());
         return new ResponseEntity<>(createdClient, HttpStatus.CREATED);
     }
 
     @GetMapping("/login")
-    public ResponseEntity<String> login(@RequestBody ClientRequestDTO client) {
-        String token = clientService.login(client.getEmail(), client.getPassword());
+    public ResponseEntity<String> login(@RequestBody ClientRequestDTO clientRequestDTO) {
+        String token = clientService.login(clientRequestDTO.getEmail(), clientRequestDTO.getPassword());
         return new ResponseEntity<>(token, HttpStatus.OK);
     }
 
