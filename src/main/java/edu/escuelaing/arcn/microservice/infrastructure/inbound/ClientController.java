@@ -40,7 +40,7 @@ public class ClientController {
 
     @PutMapping("/{clientUsername}/address")
     public ResponseEntity<Client> updateClientShippingAddress(@PathVariable String clientUsername, @RequestBody ShippingAddress shippingAddress) {
-        Client updatedClient = clientService.updateAddress(clientUsername, shippingAddress);
+        Client updatedClient = clientService.updateShippingAddress(clientUsername, shippingAddress);
         return new ResponseEntity<>(updatedClient, HttpStatus.OK);
     }
 

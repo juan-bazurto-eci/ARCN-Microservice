@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import java.text.ParseException;
@@ -52,6 +53,31 @@ class ClientServiceTest {
         assertEquals(expectedClient, createdClient);
         verify(clientRepository, times(1)).save(any(Client.class));
     }
+
+    @Test
+    void Should_ThrowException_IfUsernameAlreadyExist() {
+        PaymentMethod paymentMethod = new PaymentMethod("371449635398431", Date.from(LocalDate.now().plusDays(120).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()), "John Doe", "123");
+        ShippingAddress shippingAddress = new ShippingAddress("John Doe", "3132105755", "cr 104 cll 148", "111111", "bogota");
+        LocalDate birthDate = LocalDate.of(2003, Month.JULY, 8);
+        when(clientRepository.save(any(Client.class))).thenThrow(new ClientServiceException(ClientServiceException.CLIENT_ALREADY_EXISTS));
+
+        assertThrows(ClientServiceException.class, () -> {
+            clientService.registerClient("john_doe_arcn", "John", "Doe", "john@example.com", "johnspasswordhash", "colombia", "3132105755", birthDate, shippingAddress, paymentMethod);
+        });
+    }
+
+    @Test
+    void Should_ThrowException_IfEmailIsAlreadyTaken() {
+        PaymentMethod paymentMethod = new PaymentMethod("371449635398431", Date.from(LocalDate.now().plusDays(120).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()), "John Doe", "123");
+        ShippingAddress shippingAddress = new ShippingAddress("John Doe", "3132105755", "cr 104 cll 148", "111111", "bogota");
+        LocalDate birthDate = LocalDate.of(2003, Month.JULY, 8);
+        when(clientRepository.save(any(Client.class))).thenThrow(new ClientServiceException(ClientServiceException.EMAIL_ALREADY_TAKEN));
+
+        assertThrows(ClientServiceException.class, () -> {
+            clientService.registerClient("john_doe_arcn", "John", "Doe", "john@example.com", "johnspasswordhash", "colombia", "3132105755", birthDate, shippingAddress, paymentMethod);
+        });
+    }
+    
 
     @Test
     void Should_ThrowException_IfPaymentMethodIsWrong() {
@@ -107,57 +133,10 @@ class ClientServiceTest {
         });
     }
 
-    /*
-    @Test
-    void getClientByIdTest() {
-        // Arrange
-        String clientId = "123";
-        Client client = new Client("John Doe", "john@example.com", "Address", null);
-        when(clientRepository.findById(clientId)).thenReturn(Optional.of(client));
-
-        // Act
-        Client retrievedClient = clientService.getClientById(clientId);
-
-        // Assert
-        assertEquals(client, retrievedClient);
+    @Test 
+    void Should_GetCorrectToken() {
+        String expectedToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1pZ3VlbHMwMDciLCJlbWFpbCI6Im1pZ3VlbEBleGFtcGxlLmNvbSJ9.W-9Vw4Ef04WPEQU_hRMBGO5FqYXjWBeclxM_0-GkYPs";
+        assertEquals(expectedToken, clientService.getJwtToken("miguels007", "miguel@example.com"));
     }
-    */
 
-    /* 
-    @Test
-    void updateAddressTest() {
-        // Arrange
-        String clientId = "123";
-        String newAddress = "New Address";
-        Client client = new Client("John Doe", "john@example.com", "Address", null);
-        when(clientRepository.findById(clientId)).thenReturn(Optional.of(client));
-        when(clientRepository.save(client)).thenReturn(client);
-
-        // Act
-        Client updatedClient = clientService.updateAddress(clientId, newAddress);
-
-        // Assert
-        assertEquals(newAddress, updatedClient.getAddress());
-        verify(clientRepository, times(1)).save(client);
-    }
-    */
-
-    /*
-    @Test
-    void updatePaymentMethodTest() throws PaymentMethodException {
-        // Arrange
-        String clientId = "123";
-        PaymentMethod newPaymentMethod = new PaymentMethod("371449635398431", Date.from(LocalDate.now().plusDays(120).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()), "John Doe", "123");
-        Client client = new Client("John Doe", "john@example.com", "Address", null);
-        when(clientRepository.findById(clientId)).thenReturn(Optional.of(client));
-        when(clientRepository.save(client)).thenReturn(client);
-
-        // Act
-        Client updatedClient = clientService.updatePaymentMethod(clientId, newPaymentMethod);
-
-        // Assert
-        assertEquals(newPaymentMethod, updatedClient.getPaymentDetails());
-        verify(clientRepository, times(1)).save(client);
-    }
-    */
 }
