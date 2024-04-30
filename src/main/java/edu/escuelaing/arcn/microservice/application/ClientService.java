@@ -28,7 +28,8 @@ public class ClientService {
             String country, String phoneNumber, LocalDate birthDate, ShippingAddress shippingAddress,
             PaymentMethod paymentMethod) {
 
-        Client client = clientInformationIsValid(username, firstName, lastName,email,passwordHash,country,passwordHash,birthDate,shippingAddress, paymentMethod);
+        Client client = clientInformationIsValid(username, firstName, lastName, email, passwordHash, country,
+                passwordHash, birthDate, shippingAddress, paymentMethod);
 
         passwordHash = BCrypt.hashpw(passwordHash, BCrypt.gensalt(15));
 
@@ -39,8 +40,9 @@ public class ClientService {
 
     public Client updateClient(Client client) {
 
-        Client updatedClient = clientInformationIsValid(client.getUsername(), client.getFirstName(), client.getLastName(),client.getEmail(),client.getPasswordHash(),client.getCountry(),
-        client.getPhoneNumber(),client.getBirthDate(),client.getShippingAddress(), client.getPaymentMethod());
+        Client updatedClient = clientInformationIsValid(client.getUsername(), client.getFirstName(),
+                client.getLastName(), client.getEmail(), client.getPasswordHash(), client.getCountry(),
+                client.getPhoneNumber(), client.getBirthDate(), client.getShippingAddress(), client.getPaymentMethod());
 
         return clientRepository.save(updatedClient);
     }
@@ -120,9 +122,10 @@ public class ClientService {
         return expirationDate.after(currentDate);
     }
 
-    private Client clientInformationIsValid(String username, String firstName, String lastName, String email, String passwordHash,
-    String country, String phoneNumber, LocalDate birthDate, ShippingAddress shippingAddress,
-    PaymentMethod paymentMethod) {
+    private Client clientInformationIsValid(String username, String firstName, String lastName, String email,
+            String passwordHash,
+            String country, String phoneNumber, LocalDate birthDate, ShippingAddress shippingAddress,
+            PaymentMethod paymentMethod) {
 
         if (paymentMethod == null) {
             throw new PaymentMethodException(PaymentMethodException.MISSING_PAYMENT_METHOD);
@@ -136,8 +139,8 @@ public class ClientService {
             throw new PaymentMethodException(PaymentMethodException.EXPIRATION_DATE_INVALID);
         }
 
-        if (username == "" || firstName == "" || lastName == "" || email == "" || passwordHash == "" || country == ""
-                || phoneNumber == "") {
+        if (username.equals("") || firstName.equals("") || lastName.equals("") || email.equals("")
+                || passwordHash.equals("") || country.equals("") || phoneNumber.equals("")) {
             throw new ClientServiceException(ClientServiceException.BLANK_FIELDS);
         }
 
@@ -153,7 +156,8 @@ public class ClientService {
             throw new ClientServiceException(ClientServiceException.EMAIL_ALREADY_TAKEN);
         }
 
-        return new Client(username, firstName, lastName, email, passwordHash, country, phoneNumber, birthDate, shippingAddress, paymentMethod);
+        return new Client(username, firstName, lastName, email, passwordHash, country, phoneNumber, birthDate,
+                shippingAddress, paymentMethod);
     }
 
 }
