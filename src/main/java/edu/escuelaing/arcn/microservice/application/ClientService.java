@@ -7,6 +7,10 @@ import edu.escuelaing.arcn.microservice.domain.model.Client;
 import edu.escuelaing.arcn.microservice.domain.model.PaymentMethod;
 import edu.escuelaing.arcn.microservice.domain.model.ShippingAddress;
 import edu.escuelaing.arcn.microservice.domain.repository.ClientRepository;
+import edu.escuelaing.arcn.microservice.dto.ClientRequestDTO;
+import edu.escuelaing.arcn.microservice.dto.ClientResponseDTO;
+import edu.escuelaing.arcn.microservice.mapper.ClientMapper;
+
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import com.auth0.jwt.JWT;
@@ -24,27 +28,27 @@ public class ClientService {
         this.clientRepository = clientRepository;
     }
 
-    public Client registerClient(String username, String firstName, String lastName, String email, String passwordHash,
+    public ClientResponseDTO registerClient(String username, String firstName, String lastName, String email, String password,
             String country, String phoneNumber, LocalDate birthDate, ShippingAddress shippingAddress,
             PaymentMethod paymentMethod) {
 
-        Client client = clientInformationIsValid(username, firstName, lastName, email, passwordHash, country,
-                passwordHash, birthDate, shippingAddress, paymentMethod);
+        Client client = clientInformationIsValid(username, firstName, lastName, email, password, country,
+                password, birthDate, shippingAddress, paymentMethod);
 
-        passwordHash = BCrypt.hashpw(passwordHash, BCrypt.gensalt(15));
+        password = BCrypt.hashpw(password, BCrypt.gensalt(15));
 
-        client.setPasswordHash(passwordHash);
+        client.setPasswordHash(password);
 
-        return clientRepository.save(client);
+        return ClientMapper.toResponseDTO(clientRepository.save(client));
     }
 
-    public Client updateClient(Client client) {
+    public ClientResponseDTO updateClient(ClientRequestDTO client) {
 
         Client updatedClient = clientInformationIsValid(client.getUsername(), client.getFirstName(),
-                client.getLastName(), client.getEmail(), client.getPasswordHash(), client.getCountry(),
+                client.getLastName(), client.getEmail(), client.getPassword(), client.getCountry(),
                 client.getPhoneNumber(), client.getBirthDate(), client.getShippingAddress(), client.getPaymentMethod());
 
-        return clientRepository.save(updatedClient);
+        return ClientMapper.toResponseDTO(clientRepository.save(updatedClient));
     }
 
     public String login(String email, String password) {

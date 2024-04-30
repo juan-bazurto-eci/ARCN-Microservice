@@ -5,6 +5,9 @@ import edu.escuelaing.arcn.microservice.domain.exceptions.PaymentMethodException
 import edu.escuelaing.arcn.microservice.domain.model.Client;
 import edu.escuelaing.arcn.microservice.domain.model.PaymentMethod;
 import edu.escuelaing.arcn.microservice.domain.model.ShippingAddress;
+import edu.escuelaing.arcn.microservice.dto.ClientRequestDTO;
+import edu.escuelaing.arcn.microservice.dto.ClientResponseDTO;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,21 +23,20 @@ public class ClientController {
     }
 
     @PostMapping
-    public ResponseEntity<Client> registerClient(@RequestBody Client client) throws PaymentMethodException {
-        System.out.println(client);
-        Client createdClient = clientService.registerClient(client.getUsername(), client.getFirstName(), client.getLastName(), client.getEmail(), client.getPasswordHash(), client.getCountry(), client.getPhoneNumber(), client.getBirthDate(), client.getShippingAddress(), client.getPaymentMethod());
+    public ResponseEntity<ClientResponseDTO> registerClient(@RequestBody ClientRequestDTO client) throws PaymentMethodException {
+        ClientResponseDTO createdClient = clientService.registerClient(client.getUsername(), client.getFirstName(), client.getLastName(), client.getEmail(), client.getPassword(), client.getCountry(), client.getPhoneNumber(), client.getBirthDate(), client.getShippingAddress(), client.getPaymentMethod());
         return new ResponseEntity<>(createdClient, HttpStatus.CREATED);
     }
 
     @GetMapping("/login")
-    public ResponseEntity<String> login(@RequestBody Client client) {
-        String token = clientService.login(client.getEmail(), client.getPasswordHash());
+    public ResponseEntity<String> login(@RequestBody ClientRequestDTO client) {
+        String token = clientService.login(client.getEmail(), client.getPassword());
         return new ResponseEntity<>(token, HttpStatus.OK);
     }
 
     @PutMapping("/{clientUsername}")
-    public ResponseEntity<Client> updateClient(@PathVariable String clientUsername, @RequestBody Client client) {
-        Client updatedClient = clientService.updateClient(client);
+    public ResponseEntity<ClientResponseDTO> updateClient(@PathVariable String clientUsername, @RequestBody ClientRequestDTO client) {
+        ClientResponseDTO updatedClient = clientService.updateClient(client);
         return new ResponseEntity<>(updatedClient, HttpStatus.OK);
     }
 

@@ -7,6 +7,9 @@ import edu.escuelaing.arcn.microservice.domain.model.Client;
 import edu.escuelaing.arcn.microservice.domain.model.PaymentMethod;
 import edu.escuelaing.arcn.microservice.domain.model.ShippingAddress;
 import edu.escuelaing.arcn.microservice.domain.repository.ClientRepository;
+import edu.escuelaing.arcn.microservice.dto.ClientRequestDTO;
+import edu.escuelaing.arcn.microservice.dto.ClientResponseDTO;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -45,10 +48,11 @@ class ClientServiceTest {
         ShippingAddress shippingAddress = new ShippingAddress("John Doe", "3132105755", "cr 104 cll 148", "111111", "bogota");
         LocalDate birthDate = LocalDate.of(2003, Month.JULY, 8);
 
-        Client expectedClient = new Client("john_doe_arcn", "John", "Doe", "john@example.com", "johnspasswordhash", "colombia", "3132105755", birthDate, shippingAddress, paymentMethod);
-        when(clientRepository.save(any(Client.class))).thenReturn(expectedClient);
+        ClientResponseDTO expectedClient = new ClientResponseDTO("john_doe_arcn", "John", "Doe", "john@example.com", "colombia", "3132105755", birthDate, shippingAddress, paymentMethod);
+        Client client = new Client("john_doe_arcn", "John", "Doe", "john@example.com", "password", "colombia", "3132105755", birthDate, shippingAddress, paymentMethod);
+        when(clientRepository.save(any(Client.class))).thenReturn(client);
 
-        Client createdClient = clientService.registerClient("john_doe_arcn", "John", "Doe", "john@example.com", "johnspasswordhash", "colombia", "3132105755", birthDate, shippingAddress, paymentMethod);
+        ClientResponseDTO createdClient = clientService.registerClient("john_doe_arcn", "John", "Doe", "john@example.com", "johnspasswordhash", "colombia", "3132105755", birthDate, shippingAddress, paymentMethod);
 
         assertEquals(expectedClient, createdClient);
         verify(clientRepository, times(1)).save(any(Client.class));
