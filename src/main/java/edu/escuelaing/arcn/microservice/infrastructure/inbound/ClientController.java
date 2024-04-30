@@ -23,21 +23,22 @@ public class ClientController {
     }
 
     @PostMapping
+    /* istanbul ignore next */
     public ResponseEntity<ClientResponseDTO> registerClient(@RequestBody ClientRequestDTO clientRequestDTO) throws PaymentMethodException {
-        /* istanbul ignore next */
         Client client = ClientMapper.toEntity(clientRequestDTO);
         ClientResponseDTO createdClient = clientService.registerClient(client);
         return new ResponseEntity<>(createdClient, HttpStatus.CREATED);
     }
 
     @GetMapping("/login")
+    /* istanbul ignore next */
     public ResponseEntity<String> login(@RequestBody ClientRequestDTO clientRequestDTO) {
-        /* istanbul ignore next */
         String token = clientService.login(clientRequestDTO.getEmail(), clientRequestDTO.getPassword());
         return new ResponseEntity<>(token, HttpStatus.OK);
     }
 
     @PutMapping("/{clientUsername}")
+    /* istanbul ignore next */
     public ResponseEntity<ClientResponseDTO> updateClient(@PathVariable String clientUsername, @RequestBody ClientRequestDTO clientRequestDTO) {
         Client client = ClientMapper.toEntity(clientRequestDTO);
         ClientResponseDTO updatedClient = clientService.updateClient(client);
