@@ -10,7 +10,7 @@ import edu.escuelaing.arcn.microservice.domain.model.ShippingAddress;
 import edu.escuelaing.arcn.microservice.dto.ClientRequestDTO;
 import edu.escuelaing.arcn.microservice.dto.ClientResponseDTO;
 import edu.escuelaing.arcn.microservice.mapper.ClientMapper;
-
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +25,9 @@ public class ClientController {
     }
 
     @PostMapping
+    @Operation(
+        summary = "Register a client"
+    )
     public ResponseEntity<ClientResponseDTO> registerClient(@RequestBody ClientRequestDTO clientRequestDTO) {
         Client client = ClientMapper.toEntity(clientRequestDTO);
         try {
@@ -39,6 +42,9 @@ public class ClientController {
         }
     }
 
+    @Operation(
+        summary = "Log In"
+    )
     @GetMapping("/login")
     public ResponseEntity<String> login(@RequestBody ClientRequestDTO clientRequestDTO) {
         try {
@@ -48,7 +54,10 @@ public class ClientController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
         }
     }
-
+    
+    @Operation(
+        summary = "Update a client by username"
+    )
     @PutMapping("/{clientUsername}")
     public ResponseEntity<ClientResponseDTO> updateClient(@PathVariable String clientUsername,
             @RequestBody ClientRequestDTO clientRequestDTO) {
@@ -65,6 +74,9 @@ public class ClientController {
         }
     }
 
+    @Operation(
+        summary = "Update a client's shipping address by username"
+    )
     @PutMapping("/{clientUsername}/address")
     public ResponseEntity<ClientResponseDTO> updateClientShippingAddress(@PathVariable String clientUsername,
             @RequestBody ShippingAddress shippingAddress) {
@@ -78,13 +90,16 @@ public class ClientController {
 
     }
 
-    @PutMapping("/{clientId}/payment-method")
-    public ResponseEntity<ClientResponseDTO> updateClientPaymentMethod(@PathVariable String clientId,
+    @Operation(
+        summary = "Update a client's payment method by username"
+    )
+    @PutMapping("/{clientUsername}/payment-method")
+    public ResponseEntity<ClientResponseDTO> updateClientPaymentMethod(@PathVariable String clientUsername,
             @RequestBody PaymentMethod newPaymentMethod) throws PaymentMethodException {
 
         try {
             ClientResponseDTO updatedClient = ClientMapper
-                    .toResponseDTO(clientService.updatePaymentMethod(clientId, newPaymentMethod));
+                    .toResponseDTO(clientService.updatePaymentMethod(clientUsername, newPaymentMethod));
             return new ResponseEntity<>(updatedClient, HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(new ClientResponseDTO(e.getMessage()), HttpStatus.BAD_REQUEST);

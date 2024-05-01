@@ -1,5 +1,6 @@
 package edu.escuelaing.arcn.microservice.dto;
 
+import org.springframework.context.annotation.Bean;
 import java.time.LocalDate;
 import edu.escuelaing.arcn.microservice.domain.model.PaymentMethod;
 import edu.escuelaing.arcn.microservice.domain.model.ShippingAddress;
