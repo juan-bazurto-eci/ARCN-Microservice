@@ -47,7 +47,6 @@ public class ClientService {
 
     public String login(String email, String password) {
         Client client = getClientByEmail(email);
-        System.out.println("CLIENT: " + client);
         if (BCrypt.checkpw(password, client.getPasswordHash())) {
             return getJwtToken(client.getUsername(), client.getEmail());
         } else {
