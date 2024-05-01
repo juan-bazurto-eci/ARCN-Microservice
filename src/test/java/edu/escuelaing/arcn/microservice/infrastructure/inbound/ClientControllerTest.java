@@ -17,6 +17,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+
 import edu.escuelaing.arcn.microservice.application.ClientService;
 import edu.escuelaing.arcn.microservice.domain.exceptions.PaymentMethodException;
 import edu.escuelaing.arcn.microservice.domain.model.Client;
@@ -26,6 +28,7 @@ import edu.escuelaing.arcn.microservice.dto.ClientRequestDTO;
 import edu.escuelaing.arcn.microservice.dto.ClientResponseDTO;
 import edu.escuelaing.arcn.microservice.mapper.ClientMapper;
 
+@CrossOrigin(origins = "*")
 public class ClientControllerTest {
 
     @Mock
