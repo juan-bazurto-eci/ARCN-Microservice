@@ -8,15 +8,16 @@ import lombok.Data;
 @Data
 public class ClientResponseDTO {
 
-    private final String username;
-    private final String firstName;
-    private final String lastName;
-    private final String email;
-    private final String country;
-    private final String phoneNumber;
-    private final LocalDate birthDate;
-    private final ShippingAddress shippingAddress;
-    private final PaymentMethod paymentMethod;
+    private String message;
+    private String username;
+    private String firstName;
+    private String lastName;
+    private String email;
+    private String country;
+    private String phoneNumber;
+    private LocalDate birthDate;
+    private ShippingAddress shippingAddress;
+    private PaymentMethod paymentMethod;
 
     public ClientResponseDTO(String username, String firstName, String lastName, String email, String country, String phoneNumber, LocalDate birthDate, ShippingAddress shippingAddress, PaymentMethod paymentMethod){
         this.username = username;
@@ -28,6 +29,10 @@ public class ClientResponseDTO {
         this.birthDate=birthDate;
         this.shippingAddress=shippingAddress;
         this.paymentMethod=paymentMethod;
+    }
+
+    public ClientResponseDTO(String message){
+        this.message = message;
     }
 
 }

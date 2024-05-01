@@ -24,6 +24,7 @@ import edu.escuelaing.arcn.microservice.domain.model.PaymentMethod;
 import edu.escuelaing.arcn.microservice.domain.model.ShippingAddress;
 import edu.escuelaing.arcn.microservice.dto.ClientRequestDTO;
 import edu.escuelaing.arcn.microservice.dto.ClientResponseDTO;
+import edu.escuelaing.arcn.microservice.mapper.ClientMapper;
 
 public class ClientControllerTest {
 
@@ -133,10 +134,12 @@ public class ClientControllerTest {
 
         when(clientService.updateShippingAddress(anyString(), any(ShippingAddress.class))).thenReturn(updatedClient);
 
-        ResponseEntity<Client> response = clientController.updateClientShippingAddress(clientUsername, shippingAddress);
+        ClientResponseDTO expectedClientResponseDTO = ClientMapper.toResponseDTO(updatedClient);
+
+        ResponseEntity<ClientResponseDTO> response = clientController.updateClientShippingAddress(clientUsername, shippingAddress);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(updatedClient, response.getBody());
+        assertEquals(expectedClientResponseDTO, response.getBody());
     }
 
     @Test
@@ -153,9 +156,11 @@ public class ClientControllerTest {
 
         when(clientService.updatePaymentMethod(anyString(), any(PaymentMethod.class))).thenReturn(updatedClient);
 
-        ResponseEntity<Client> response = clientController.updateClientPaymentMethod(clientId, newPaymentMethod);
+        ClientResponseDTO expectedClientResponseDTO = ClientMapper.toResponseDTO(updatedClient);
+
+        ResponseEntity<ClientResponseDTO> response = clientController.updateClientPaymentMethod(clientId, newPaymentMethod);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(updatedClient, response.getBody());
+        assertEquals(expectedClientResponseDTO, response.getBody());
     }
 }
