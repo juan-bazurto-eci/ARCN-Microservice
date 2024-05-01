@@ -47,6 +47,7 @@ public class ClientService {
 
     public String login(String email, String password) {
         Client client = getClientByEmail(email);
+        System.out.println("CLIENT: " + client);
         if (BCrypt.checkpw(password, client.getPasswordHash())) {
             return getJwtToken(client.getUsername(), client.getEmail());
         } else {
@@ -142,6 +143,7 @@ public class ClientService {
             throw new ClientServiceException(ClientServiceException.BLANK_FIELDS);
         }
 
+
         if (shippingAddress == null) {
             throw new ShippingAddressException(ShippingAddressException.MISSING_SHIPPING_ADDRESS);
         }
@@ -157,5 +159,4 @@ public class ClientService {
         return new Client(username, firstName, lastName, email, passwordHash, country, phoneNumber, birthDate,
                 shippingAddress, paymentMethod);
     }
-
 }
