@@ -142,7 +142,6 @@ public class ClientService {
             throw new ClientServiceException(ClientServiceException.BLANK_FIELDS);
         }
 
-
         if (shippingAddress == null) {
             throw new ShippingAddressException(ShippingAddressException.MISSING_SHIPPING_ADDRESS);
         }

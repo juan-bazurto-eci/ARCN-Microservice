@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/client")
+@CrossOrigin(origins = "*")
 public class ClientController {
     private final ClientService clientService;
 
@@ -25,26 +26,22 @@ public class ClientController {
     }
 
     @PostMapping
-    @Operation(
-        summary = "Register a client"
-    )
+    @Operation(summary = "Register a client")
     public ResponseEntity<ClientResponseDTO> registerClient(@RequestBody ClientRequestDTO clientRequestDTO) {
-        Client client = ClientMapper.toEntity(clientRequestDTO);
         try {
+            Client client = ClientMapper.toEntity(clientRequestDTO);
             ClientResponseDTO createdClient = clientService.registerClient(client);
             return new ResponseEntity<>(createdClient, HttpStatus.CREATED);
+        } catch (ClientServiceException e) {
+            return new ResponseEntity<>(new ClientResponseDTO(e.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (PaymentMethodException e) {
             return new ResponseEntity<>(new ClientResponseDTO(e.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (ShippingAddressException e) {
             return new ResponseEntity<>(new ClientResponseDTO(e.getMessage()), HttpStatus.BAD_REQUEST);
-        } catch (ClientServiceException e) {
-            return new ResponseEntity<>(new ClientResponseDTO(e.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
 
-    @Operation(
-        summary = "Log In"
-    )
+    @Operation(summary = "Log In")
     @GetMapping("/login")
     public ResponseEntity<String> login(@RequestBody ClientRequestDTO clientRequestDTO) {
         try {
@@ -54,29 +51,17 @@ public class ClientController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
         }
     }
-    
-    @Operation(
-        summary = "Update a client by username"
-    )
+
+    @Operation(summary = "Update a client by username")
     @PutMapping("/{clientUsername}")
     public ResponseEntity<ClientResponseDTO> updateClient(@PathVariable String clientUsername,
             @RequestBody ClientRequestDTO clientRequestDTO) {
         Client client = ClientMapper.toEntity(clientRequestDTO);
-        try {
-            ClientResponseDTO updatedClient = clientService.updateClient(client);
-            return new ResponseEntity<>(updatedClient, HttpStatus.OK);
-        } catch (PaymentMethodException e) {
-            return new ResponseEntity<>(new ClientResponseDTO(e.getMessage()), HttpStatus.BAD_REQUEST);
-        } catch (ShippingAddressException e) {
-            return new ResponseEntity<>(new ClientResponseDTO(e.getMessage()), HttpStatus.BAD_REQUEST);
-        } catch (ClientServiceException e) {
-            return new ResponseEntity<>(new ClientResponseDTO(e.getMessage()), HttpStatus.BAD_REQUEST);
-        }
+        ClientResponseDTO updatedClient = clientService.updateClient(client);
+        return new ResponseEntity<>(updatedClient, HttpStatus.OK);
     }
 
-    @Operation(
-        summary = "Update a client's shipping address by username"
-    )
+    @Operation(summary = "Update a client's shipping address by username")
     @PutMapping("/{clientUsername}/address")
     public ResponseEntity<ClientResponseDTO> updateClientShippingAddress(@PathVariable String clientUsername,
             @RequestBody ShippingAddress shippingAddress) {
@@ -90,9 +75,7 @@ public class ClientController {
 
     }
 
-    @Operation(
-        summary = "Update a client's payment method by username"
-    )
+    @Operation(summary = "Update a client's payment method by username")
     @PutMapping("/{clientUsername}/payment-method")
     public ResponseEntity<ClientResponseDTO> updateClientPaymentMethod(@PathVariable String clientUsername,
             @RequestBody PaymentMethod newPaymentMethod) throws PaymentMethodException {
@@ -104,6 +87,6 @@ public class ClientController {
         } catch (RuntimeException e) {
             return new ResponseEntity<>(new ClientResponseDTO(e.getMessage()), HttpStatus.BAD_REQUEST);
         }
-    }
+    }   
 
 }
