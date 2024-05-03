@@ -7,6 +7,7 @@ import edu.escuelaing.arcn.microservice.domain.model.Client;
 import edu.escuelaing.arcn.microservice.domain.model.PaymentMethod;
 import edu.escuelaing.arcn.microservice.domain.model.ShippingAddress;
 import edu.escuelaing.arcn.microservice.domain.repository.ClientRepository;
+import edu.escuelaing.arcn.microservice.dto.AuthorizationResponse;
 import edu.escuelaing.arcn.microservice.dto.ClientResponseDTO;
 import edu.escuelaing.arcn.microservice.mapper.ClientMapper;
 import org.springframework.stereotype.Service;
@@ -45,10 +46,12 @@ public class ClientService {
         return ClientMapper.toResponseDTO(clientRepository.save(updatedClient));
     }
 
-    public String login(String email, String password) {
+    public AuthorizationResponse login(String email, String password) {
         Client client = getClientByEmail(email);
         if (BCrypt.checkpw(password, client.getPasswordHash())) {
-            return getJwtToken(client.getUsername(), client.getEmail());
+            String token = getJwtToken(client.getUsername(), client.getEmail());
+            ClientResponseDTO clientResponseDTO = ClientMapper.toResponseDTO(client);
+            return new AuthorizationResponse(token, clientResponseDTO);
         } else {
             throw new ClientServiceException(ClientServiceException.INVALID_CREDENTIALS);
         }

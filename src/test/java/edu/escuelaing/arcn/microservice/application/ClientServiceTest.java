@@ -7,6 +7,7 @@ import edu.escuelaing.arcn.microservice.domain.model.Client;
 import edu.escuelaing.arcn.microservice.domain.model.PaymentMethod;
 import edu.escuelaing.arcn.microservice.domain.model.ShippingAddress;
 import edu.escuelaing.arcn.microservice.domain.repository.ClientRepository;
+import edu.escuelaing.arcn.microservice.dto.AuthorizationResponse;
 import edu.escuelaing.arcn.microservice.dto.ClientRequestDTO;
 import edu.escuelaing.arcn.microservice.dto.ClientResponseDTO;
 
@@ -194,6 +195,10 @@ class ClientServiceTest {
 
         LocalDate birthDate = LocalDate.of(2003, Month.JULY, 8);
 
+        AuthorizationResponse expectedResponse = new AuthorizationResponse("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1pZ3VlbHMwMDciLCJlbWFpbCI6Im1pZ3VlbEBleGFtcGxlLmNvbSJ9.W-9Vw4Ef04WPEQU_hRMBGO5FqYXjWBeclxM_0-GkYPs", 
+        new ClientResponseDTO("miguels007", "John", "Doe", "miguel@example.com", "colombia",
+        "3132105755", birthDate, shippingAddress, paymentMethod));
+
         Client expectedClient = new Client("miguels007", "John", "Doe", "miguel@example.com",
                 "$2a$15$zcCXfD7wDHB6WcHOJzmYteEY1VjkOCb8TX30W.i0KNg2dU0EAc0pe", "colombia",
                 "3132105755", birthDate, shippingAddress, paymentMethod);
@@ -201,11 +206,9 @@ class ClientServiceTest {
         Client client = new Client("miguels007", "John", "Doe", "miguel@example.com", "password", "colombia",
                 "3132105755", birthDate, shippingAddress, paymentMethod);
 
-        String expectedToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1pZ3VlbHMwMDciLCJlbWFpbCI6Im1pZ3VlbEBleGFtcGxlLmNvbSJ9.W-9Vw4Ef04WPEQU_hRMBGO5FqYXjWBeclxM_0-GkYPs";
-
         when(clientRepository.findByEmail("miguel@example.com")).thenReturn(Optional.of(expectedClient));
 
-        assertEquals(expectedToken, clientService.login(client.getEmail(), client.getPasswordHash()));
+        assertEquals(expectedResponse, clientService.login(client.getEmail(), client.getPasswordHash()));
     }
 
     @Test

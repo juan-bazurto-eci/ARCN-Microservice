@@ -25,6 +25,7 @@ import edu.escuelaing.arcn.microservice.domain.exceptions.ShippingAddressExcepti
 import edu.escuelaing.arcn.microservice.domain.model.Client;
 import edu.escuelaing.arcn.microservice.domain.model.PaymentMethod;
 import edu.escuelaing.arcn.microservice.domain.model.ShippingAddress;
+import edu.escuelaing.arcn.microservice.dto.AuthorizationResponse;
 import edu.escuelaing.arcn.microservice.dto.ClientRequestDTO;
 import edu.escuelaing.arcn.microservice.dto.ClientResponseDTO;
 import edu.escuelaing.arcn.microservice.mapper.ClientMapper;
@@ -163,12 +164,12 @@ public class ClientControllerTest {
         ClientRequestDTO clientRequestDTO = new ClientRequestDTO("john_doe_arcn", "John", "Doe",
         "john@example.com",
         "password", "colombia", "3132105755", birthDate, shippingAddress, paymentMethod);
-        String expectedToken = "mockedToken";
+        AuthorizationResponse expectedToken = new AuthorizationResponse("mockToken", new ClientResponseDTO(null));
         
         when(clientService.login(clientRequestDTO.getEmail(), clientRequestDTO.getPassword()))
         .thenReturn(expectedToken);
         
-        ResponseEntity<String> response = clientController.login(clientRequestDTO);
+        ResponseEntity<AuthorizationResponse> response = clientController.login(clientRequestDTO);
         
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(expectedToken, response.getBody());
@@ -193,7 +194,7 @@ public class ClientControllerTest {
 
         when(clientService.login(any(String.class),any(String.class))).thenThrow(new ClientServiceException(ClientServiceException.INVALID_CREDENTIALS));
 
-        ResponseEntity<String> response = clientController.login(clientRequestDTO);
+        ResponseEntity<AuthorizationResponse> response = clientController.login(clientRequestDTO);
 
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
     }

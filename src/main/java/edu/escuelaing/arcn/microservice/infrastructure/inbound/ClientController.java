@@ -7,6 +7,7 @@ import edu.escuelaing.arcn.microservice.domain.exceptions.ShippingAddressExcepti
 import edu.escuelaing.arcn.microservice.domain.model.Client;
 import edu.escuelaing.arcn.microservice.domain.model.PaymentMethod;
 import edu.escuelaing.arcn.microservice.domain.model.ShippingAddress;
+import edu.escuelaing.arcn.microservice.dto.AuthorizationResponse;
 import edu.escuelaing.arcn.microservice.dto.ClientRequestDTO;
 import edu.escuelaing.arcn.microservice.dto.ClientResponseDTO;
 import edu.escuelaing.arcn.microservice.mapper.ClientMapper;
@@ -43,12 +44,12 @@ public class ClientController {
 
     @Operation(summary = "Log In")
     @GetMapping("/login")
-    public ResponseEntity<String> login(@RequestBody ClientRequestDTO clientRequestDTO) {
+    public ResponseEntity<AuthorizationResponse> login(@RequestBody ClientRequestDTO clientRequestDTO) {
         try {
-            String token = clientService.login(clientRequestDTO.getEmail(), clientRequestDTO.getPassword());
-            return new ResponseEntity<>(token, HttpStatus.OK);
+            AuthorizationResponse response = clientService.login(clientRequestDTO.getEmail(), clientRequestDTO.getPassword());
+            return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (ClientServiceException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(new AuthorizationResponse(null, null), HttpStatus.UNAUTHORIZED);
         }
     }
 
