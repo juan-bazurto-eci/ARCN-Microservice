@@ -43,7 +43,7 @@ public class ClientController {
     }
 
     @Operation(summary = "Log In")
-    @GetMapping("/login")
+    @PostMapping("/login")
     public ResponseEntity<AuthorizationResponse> login(@RequestBody ClientRequestDTO clientRequestDTO) {
         try {
             AuthorizationResponse response = clientService.login(clientRequestDTO.getEmail(), clientRequestDTO.getPassword());
