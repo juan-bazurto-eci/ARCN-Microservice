@@ -28,7 +28,7 @@ public class ClientService {
 
     public ClientResponseDTO registerClient(Client client) {
 
-        client = clientInformationIsValid(client.getUsername(), client.getFirstName(), client.getLastName(), client.getEmail(), client.getCountry(), client.getCountry(), client.getPhoneNumber(), client.getBirthDate(), client.getShippingAddress(), client.getPaymentMethod());
+        client = clientInformationIsValid(client.getUsername(), client.getFirstName(), client.getLastName(), client.getEmail(), client.getPasswordHash(), client.getCountry(), client.getPhoneNumber(), client.getBirthDate(), client.getShippingAddress(), client.getPaymentMethod());
 
         String password = BCrypt.hashpw(client.getPasswordHash(), BCrypt.gensalt(15));
 
