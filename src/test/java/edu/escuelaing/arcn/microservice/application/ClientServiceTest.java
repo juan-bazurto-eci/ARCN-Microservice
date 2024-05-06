@@ -8,7 +8,6 @@ import edu.escuelaing.arcn.microservice.domain.model.PaymentMethod;
 import edu.escuelaing.arcn.microservice.domain.model.ShippingAddress;
 import edu.escuelaing.arcn.microservice.domain.repository.ClientRepository;
 import edu.escuelaing.arcn.microservice.dto.AuthorizationResponse;
-import edu.escuelaing.arcn.microservice.dto.ClientRequestDTO;
 import edu.escuelaing.arcn.microservice.dto.ClientResponseDTO;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -16,19 +15,16 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Month;
-import java.time.ZoneId;
-import java.util.Date;
 import java.util.Optional;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -50,13 +46,15 @@ class ClientServiceTest {
     void Should_registerClient() throws PaymentMethodException {
 
         PaymentMethod paymentMethod = new PaymentMethod("371449635398431",
-                Date.from(LocalDate.now().plusDays(120).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()),
+                "11/32",
                 "John Doe", "123");
-        ShippingAddress shippingAddress = new ShippingAddress("John Doe", "3132105755", "cr 104 cll 148", "111111",
+        ShippingAddress shippingAddress = new ShippingAddress("John Doe", "3132105755", "cr 104 cll 148",
+                "111111",
                 "bogota");
         LocalDate birthDate = LocalDate.of(2003, Month.JULY, 8);
 
-        ClientResponseDTO expectedClient = new ClientResponseDTO("john_doe_arcn", "John", "Doe", "john@example.com",
+        ClientResponseDTO expectedClient = new ClientResponseDTO("john_doe_arcn", "John", "Doe",
+                "john@example.com",
                 "colombia", "3132105755", birthDate, shippingAddress, paymentMethod);
         Client client = new Client("john_doe_arcn", "John", "Doe", "john@example.com", "password", "colombia",
                 "3132105755", birthDate, shippingAddress, paymentMethod);
@@ -71,9 +69,10 @@ class ClientServiceTest {
     @Test
     void Should_ThrowException_IfUsernameAlreadyExist() {
         PaymentMethod paymentMethod = new PaymentMethod("371449635398431",
-                Date.from(LocalDate.now().plusDays(120).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()),
+                "11/32",
                 "John Doe", "123");
-        ShippingAddress shippingAddress = new ShippingAddress("John Doe", "3132105755", "cr 104 cll 148", "111111",
+        ShippingAddress shippingAddress = new ShippingAddress("John Doe", "3132105755", "cr 104 cll 148",
+                "111111",
                 "bogota");
         LocalDate birthDate = LocalDate.of(2003, Month.JULY, 8);
         Client client = new Client("john_doe_arcn", "John", "Doe", "john@example.com", "password", "colombia",
@@ -89,9 +88,10 @@ class ClientServiceTest {
     @Test
     void Should_ThrowException_IfEmailIsAlreadyTaken() {
         PaymentMethod paymentMethod = new PaymentMethod("371449635398431",
-                Date.from(LocalDate.now().plusDays(120).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()),
+                "11/32",
                 "John Doe", "123");
-        ShippingAddress shippingAddress = new ShippingAddress("John Doe", "3132105755", "cr 104 cll 148", "111111",
+        ShippingAddress shippingAddress = new ShippingAddress("John Doe", "3132105755", "cr 104 cll 148",
+                "111111",
                 "bogota");
         LocalDate birthDate = LocalDate.of(2003, Month.JULY, 8);
         when(clientRepository.save(any(Client.class)))
@@ -107,9 +107,10 @@ class ClientServiceTest {
     @Test
     void Should_ThrowException_IfPaymentMethodIsWrong() {
         PaymentMethod paymentMethod = new PaymentMethod("371449398431",
-                Date.from(LocalDate.now().plusDays(120).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()),
+                "11/32",
                 "John Doe", "13");
-        ShippingAddress shippingAddress = new ShippingAddress("John Doe", "3132105755", "cr 104 cll 148", "111111",
+        ShippingAddress shippingAddress = new ShippingAddress("John Doe", "3132105755", "cr 104 cll 148",
+                "111111",
                 "bogota");
         LocalDate birthDate = LocalDate.of(2003, Month.JULY, 8);
         Client client = new Client("john_doe_arcn", "John", "Doe", "john@example.com", "password", "colombia",
@@ -122,9 +123,9 @@ class ClientServiceTest {
 
     @Test
     void Should_ThrowException_IfExpirationDateIsWrong() throws ParseException {
-        Date date = new SimpleDateFormat("yyyy-MM-dd").parse("2024-01-27");
-        PaymentMethod paymentMethod = new PaymentMethod("371449635398431", date, "John Doe", "13");
-        ShippingAddress shippingAddress = new ShippingAddress("John Doe", "3132105755", "cr 104 cll 148", "111111",
+        PaymentMethod paymentMethod = new PaymentMethod("371449635398431", "11/22", "John Doe", "123");
+        ShippingAddress shippingAddress = new ShippingAddress("John Doe", "3132105755", "cr 104 cll 148",
+                "111111",
                 "bogota");
         LocalDate birthDate = LocalDate.of(2003, Month.JULY, 8);
         Client client = new Client("john_doe_arcn", "John", "Doe", "john@example.com", "password", "colombia",
@@ -138,9 +139,10 @@ class ClientServiceTest {
     @Test
     void Should_ThrowException_IfThereAreBlankFields() throws ParseException {
         PaymentMethod paymentMethod = new PaymentMethod("371449635398431",
-                Date.from(LocalDate.now().plusDays(120).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()),
+                "11/32",
                 "John Doe", "123");
-        ShippingAddress shippingAddress = new ShippingAddress("John Doe", "3132105755", "cr 104 cll 148", "111111",
+        ShippingAddress shippingAddress = new ShippingAddress("John Doe", "3132105755", "cr 104 cll 148",
+                "111111",
                 "bogota");
         LocalDate birthDate = LocalDate.of(2003, Month.JULY, 8);
         Client client = new Client("", "John", "Doe", "john@example.com", "password", "colombia", "3132105755",
@@ -154,7 +156,7 @@ class ClientServiceTest {
     @Test
     void Should_ThrowException_IfShippingAddressIsNull() throws ParseException {
         PaymentMethod paymentMethod = new PaymentMethod("371449635398431",
-                Date.from(LocalDate.now().plusDays(120).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()),
+                "11/32",
                 "John Doe", "123");
         LocalDate birthDate = LocalDate.of(2003, Month.JULY, 8);
         Client client = new Client("john_doe_arcn", "John", "Doe", "john@example.com", "password", "colombia",
@@ -167,7 +169,8 @@ class ClientServiceTest {
 
     @Test
     void Should_ThrowException_IfPaymentMethodIsNull() throws ParseException {
-        ShippingAddress shippingAddress = new ShippingAddress("John Doe", "3132105755", "cr 104 cll 148", "111111",
+        ShippingAddress shippingAddress = new ShippingAddress("John Doe", "3132105755", "cr 104 cll 148",
+                "111111",
                 "bogota");
         LocalDate birthDate = LocalDate.of(2003, Month.JULY, 8);
         Client client = new Client("john_doe_arcn", "John", "Doe", "john@example.com", "password", "colombia",
@@ -187,17 +190,19 @@ class ClientServiceTest {
     @Test
     public void testLogin() {
         PaymentMethod paymentMethod = new PaymentMethod("371449635398431",
-                Date.from(LocalDate.now().plusDays(120).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()),
+                "11/32",
                 "John Doe", "123");
 
-        ShippingAddress shippingAddress = new ShippingAddress("John Doe", "3132105755", "cr 104 cll 148", "111111",
+        ShippingAddress shippingAddress = new ShippingAddress("John Doe", "3132105755", "cr 104 cll 148",
+                "111111",
                 "bogota");
 
         LocalDate birthDate = LocalDate.of(2003, Month.JULY, 8);
 
-        AuthorizationResponse expectedResponse = new AuthorizationResponse("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1pZ3VlbHMwMDciLCJlbWFpbCI6Im1pZ3VlbEBleGFtcGxlLmNvbSJ9.W-9Vw4Ef04WPEQU_hRMBGO5FqYXjWBeclxM_0-GkYPs", 
-        new ClientResponseDTO("miguels007", "John", "Doe", "miguel@example.com", "colombia",
-        "3132105755", birthDate, shippingAddress, paymentMethod));
+        AuthorizationResponse expectedResponse = new AuthorizationResponse(
+                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1pZ3VlbHMwMDciLCJlbWFpbCI6Im1pZ3VlbEBleGFtcGxlLmNvbSJ9.W-9Vw4Ef04WPEQU_hRMBGO5FqYXjWBeclxM_0-GkYPs",
+                new ClientResponseDTO("miguels007", "John", "Doe", "miguel@example.com", "colombia",
+                        "3132105755", birthDate, shippingAddress, paymentMethod));
 
         Client expectedClient = new Client("miguels007", "John", "Doe", "miguel@example.com",
                 "$2a$15$zcCXfD7wDHB6WcHOJzmYteEY1VjkOCb8TX30W.i0KNg2dU0EAc0pe", "colombia",
@@ -215,10 +220,11 @@ class ClientServiceTest {
     void Should_ThrowException_IfCredentialsAreIncorrect() {
 
         PaymentMethod paymentMethod = new PaymentMethod("371449635398431",
-                Date.from(LocalDate.now().plusDays(120).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()),
+                "11/32",
                 "John Doe", "123");
 
-        ShippingAddress shippingAddress = new ShippingAddress("John Doe", "3132105755", "cr 104 cll 148", "111111",
+        ShippingAddress shippingAddress = new ShippingAddress("John Doe", "3132105755", "cr 104 cll 148",
+                "111111",
                 "bogota");
 
         LocalDate birthDate = LocalDate.of(2003, Month.JULY, 8);
@@ -237,10 +243,11 @@ class ClientServiceTest {
     @Test
     void Should_UpdatePaymentMethod() {
         PaymentMethod paymentMethod = new PaymentMethod("371449635398431",
-                Date.from(LocalDate.now().plusDays(120).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()),
+                "11/32",
                 "John Doe", "123");
 
-        ShippingAddress shippingAddress = new ShippingAddress("John Doe", "3132105755", "cr 104 cll 148", "111111",
+        ShippingAddress shippingAddress = new ShippingAddress("John Doe", "3132105755", "cr 104 cll 148",
+                "111111",
                 "bogota");
 
         LocalDate birthDate = LocalDate.of(2003, Month.JULY, 8);
@@ -249,12 +256,33 @@ class ClientServiceTest {
                 BCrypt.hashpw("password", BCrypt.gensalt(15)), "colombia",
                 "3132105755", birthDate, shippingAddress, paymentMethod);
 
-        when(clientRepository.findByUsername(expectedClient.getUsername())).thenReturn(Optional.of(expectedClient));
+        when(clientRepository.findByUsername(expectedClient.getUsername()))
+                .thenReturn(Optional.of(expectedClient));
         when(clientRepository.save(any(Client.class))).thenReturn(expectedClient);
 
         Client client = clientService.updatePaymentMethod(expectedClient.getUsername(), paymentMethod);
 
         assertEquals(expectedClient, client);
+    }
+
+    
+    @Test
+    void Should_ReturnFalse_IfExpirationDateIsWrong() {
+            assertFalse(clientService.isValidExpirationDate("07/23"));
+            assertFalse(clientService.isValidExpirationDate("0723"));
+            assertFalse(clientService.isValidExpirationDate("07263"));
+            assertFalse(clientService.isValidExpirationDate("abcdd"));
+            assertFalse(clientService.isValidExpirationDate("0/123"));
+            assertFalse(clientService.isValidExpirationDate("ab/cd"));
+            assertFalse(clientService.isValidExpirationDate("01/cd"));
+            assertFalse(clientService.isValidExpirationDate("ab/26"));
+        }
+        
+        
+    @Test
+    void Should_ReturnTrue_IfExpirationDateIsCorrect() {
+        assertTrue(clientService.isValidExpirationDate("09/26"));
+        assertTrue(clientService.isValidExpirationDate("07/24"));
     }
 
 }

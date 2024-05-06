@@ -15,7 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import java.time.LocalDate;
-import java.util.Date;
+import java.time.format.DateTimeParseException;
 import java.util.Optional;
 
 @Service
@@ -118,9 +118,36 @@ public class ClientService {
         return (sum % 10 == 0) && cardNumber.length() >= 13; // Adjust minimum length as needed
     }
 
-    private boolean isValidExpirationDate(Date expirationDate) {
-        Date currentDate = new Date();
-        return expirationDate.after(currentDate);
+    public boolean isValidExpirationDate(String dateString) {
+
+        if (dateString.length() != 5 || !dateString.contains("/")) {
+            return false;
+        } 
+
+        if (!Character.toString(dateString.charAt(2)).equals("/")) {
+            return false;
+        }
+
+        String[] expirationDate = dateString.split("/");
+        LocalDate currentDate = LocalDate.now();
+
+        try {
+            int currentMonth = Integer.valueOf(String.format("%02d", currentDate.getMonthValue()));
+            int currentYear = Integer.valueOf(String.format("%02d", currentDate.getYear()).substring(2));
+            int expirationYear = Integer.valueOf(expirationDate[1]);
+            int expirationMonth = Integer.valueOf(expirationDate[0]);
+            if (currentYear < expirationYear) {
+                return true;
+            } else if (expirationYear == currentYear && expirationMonth > currentMonth) {
+                return true;
+            } else {    
+                return false;
+            }
+        } catch (DateTimeParseException e) {
+            return false;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 
     private Client clientInformationIsValid(String username, String firstName, String lastName, String email,
