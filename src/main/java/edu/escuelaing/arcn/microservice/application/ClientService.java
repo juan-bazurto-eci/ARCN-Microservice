@@ -60,13 +60,26 @@ public class ClientService {
         return firstTwelveNumbersEncrypted + lastFourNumbers;
     }
 
-    public ClientResponseDTO updateClient(Client client) {
+    public ClientResponseDTO updateClient(String clientUsername, Client client) {
 
         if (!isPaymentMethodValid(client.getPaymentMethod())) {
             throw new PaymentMethodException(PaymentMethodException.PAYMENT_INFORMATION_INVALID);
         }
 
+        Optional<Client> previousClientOpt = clientRepository.findByUsername(clientUsername);
+
+        if (previousClientOpt.isEmpty()) {
+            throw new ClientServiceException(ClientServiceException.CLIENT_DOES_NOT_EXIST);
+        }
+
+        Client previousClient = previousClientOpt.get();
+
+        client.set_id(previousClient.get_id());
+        client.setUsername(clientUsername);
+
         return ClientMapper.toResponseDTO(clientRepository.save(client));
+
+
     }
 
     public AuthorizationResponse login(String email, String password) {

@@ -58,7 +58,7 @@ public class ClientController {
     public ResponseEntity<ClientResponseDTO> updateClient(@PathVariable String clientUsername,
             @RequestBody ClientRequestDTO clientRequestDTO) {
         Client client = ClientMapper.toEntity(clientRequestDTO);
-        ClientResponseDTO updatedClient = clientService.updateClient(client);
+        ClientResponseDTO updatedClient = clientService.updateClient(clientUsername, client);
         return new ResponseEntity<>(updatedClient, HttpStatus.OK);
     }
 
