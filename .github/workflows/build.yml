@@ -35,4 +35,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          AES_KEY: ${{ secrets.AES_KEY }}
         run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=juan-bazurto-eci_ARCN-Microservice -Dsonar.qualitygate.wait=true
