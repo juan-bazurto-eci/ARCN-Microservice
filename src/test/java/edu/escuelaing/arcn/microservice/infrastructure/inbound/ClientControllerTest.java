@@ -266,7 +266,7 @@ public class ClientControllerTest {
                                 "john@example.com",
                                 "colombia", "3132105755", birthDate, shippingAddress, paymentMethod);
 
-                when(clientService.updateClient(any(Client.class))).thenReturn(expectedResponse);
+                when(clientService.updateClient(any(String.class),any(Client.class))).thenReturn(expectedResponse);
 
                 ResponseEntity<ClientResponseDTO> response = clientController.updateClient(clientUsername,
                                 clientRequestDTO);
