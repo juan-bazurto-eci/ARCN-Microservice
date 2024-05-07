@@ -45,7 +45,7 @@ public class ClientService {
             client.getPaymentMethod().setCvv(encrypt(client.getPaymentMethod().getCvv()));
             client.getPaymentMethod().setExpirationDate(encrypt(client.getPaymentMethod().getExpirationDate()));
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new PaymentMethodException(PaymentMethodException.PAYMENT_INFORMATION_INVALID);
         }
 
         return ClientMapper.toResponseDTO(clientRepository.save(client));
@@ -101,7 +101,7 @@ public class ClientService {
             paymentMethod.setCvv(encrypt(encrypt(paymentMethod.getCvv())));
             paymentMethod.setExpirationDate(encrypt(paymentMethod.getExpirationDate()));
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new PaymentMethodException(PaymentMethodException.PAYMENT_INFORMATION_INVALID);
         }
 
         client.setPaymentMethod(paymentMethod);
