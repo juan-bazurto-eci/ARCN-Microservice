@@ -8,6 +8,7 @@ public class ClientMapper {
 
     public static ClientResponseDTO toResponseDTO(Client client){
         return new ClientResponseDTO(
+            client.get_id(),
             client.getUsername(), 
             client.getFirstName(), 
             client.getLastName(), 

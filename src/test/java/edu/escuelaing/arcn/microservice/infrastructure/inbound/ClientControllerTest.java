@@ -58,7 +58,7 @@ public class ClientControllerTest {
                                 "john@example.com",
                                 "password", "colombia", "3132105755", birthDate, shippingAddress, paymentMethod);
 
-                ClientResponseDTO expectedResponse = new ClientResponseDTO("john_doe_arcn", "John", "Doe",
+                ClientResponseDTO expectedResponse = new ClientResponseDTO("a","john_doe_arcn", "John", "Doe",
                                 "john@example.com",
                                 "colombia", "3132105755", birthDate, shippingAddress, paymentMethod);
 
@@ -262,7 +262,7 @@ public class ClientControllerTest {
                                 "john@example.com",
                                 "password", "colombia", "3132105755", birthDate, shippingAddress, paymentMethod);
 
-                ClientResponseDTO expectedResponse = new ClientResponseDTO("john_doe_arcn", "John", "Doe",
+                ClientResponseDTO expectedResponse = new ClientResponseDTO("a","john_doe_arcn", "John", "Doe",
                                 "john@example.com",
                                 "colombia", "3132105755", birthDate, shippingAddress, paymentMethod);
 

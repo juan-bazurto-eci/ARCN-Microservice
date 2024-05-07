@@ -47,7 +47,6 @@ public class ClientController {
     public ResponseEntity<AuthorizationResponse> login(@RequestBody ClientRequestDTO clientRequestDTO) {
         try {
             AuthorizationResponse response = clientService.login(clientRequestDTO.getEmail(), clientRequestDTO.getPassword());
-            response.getClientResponseDTO().setPaymentMethod(null);
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (ClientServiceException e) {
             return new ResponseEntity<>(new AuthorizationResponse(null, null), HttpStatus.UNAUTHORIZED);
@@ -83,6 +82,7 @@ public class ClientController {
             @RequestBody PaymentMethod newPaymentMethod) throws PaymentMethodException {
 
         try {
+            System.out.println("Controller: "+newPaymentMethod);
             ClientResponseDTO updatedClient = ClientMapper
                     .toResponseDTO(clientService.updatePaymentMethod(clientUsername, newPaymentMethod));
             return new ResponseEntity<>(updatedClient, HttpStatus.OK);

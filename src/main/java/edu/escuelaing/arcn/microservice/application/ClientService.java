@@ -17,6 +17,10 @@ import com.auth0.jwt.algorithms.Algorithm;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.Optional;
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
+import java.security.Key;
+import java.util.Base64;
 
 @Service
 public class ClientService {
@@ -28,22 +32,43 @@ public class ClientService {
 
     public ClientResponseDTO registerClient(Client client) {
 
-        client = clientInformationIsValid(client.getUsername(), client.getFirstName(), client.getLastName(), client.getEmail(), client.getPasswordHash(), client.getCountry(), client.getPhoneNumber(), client.getBirthDate(), client.getShippingAddress(), client.getPaymentMethod());
+        client = clientInformationIsValid(client.getUsername(), client.getFirstName(), client.getLastName(),
+                client.getEmail(), client.getPasswordHash(), client.getCountry(), client.getPhoneNumber(),
+                client.getBirthDate(), client.getShippingAddress(), client.getPaymentMethod());
 
         String password = BCrypt.hashpw(client.getPasswordHash(), BCrypt.gensalt(15));
 
         client.setPasswordHash(password);
+        
+        try {
+            client.getPaymentMethod().setCardNumber(encryptCardNumber(client.getPaymentMethod().getCardNumber()));
+            client.getPaymentMethod().setCvv(encrypt(client.getPaymentMethod().getCvv()));
+            client.getPaymentMethod().setExpirationDate(encrypt(client.getPaymentMethod().getExpirationDate()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         return ClientMapper.toResponseDTO(clientRepository.save(client));
     }
 
+    public String encryptCardNumber(String cardNumber) throws Exception {
+        String lastFourNumbers = cardNumber.substring(12, 16);
+        String firstTwelveNumbers = cardNumber.substring(0, 12);
+        
+        String firstTwelveNumbersEncrypted = encrypt(firstTwelveNumbers);
+
+        return firstTwelveNumbersEncrypted+lastFourNumbers;
+    }
+
     public ClientResponseDTO updateClient(Client client) {
 
-        Client updatedClient = clientInformationIsValid(client.getUsername(), client.getFirstName(),
-                client.getLastName(), client.getEmail(), client.getPasswordHash(), client.getCountry(),
-                client.getPhoneNumber(), client.getBirthDate(), client.getShippingAddress(), client.getPaymentMethod());
+        System.out.println(client);
 
-        return ClientMapper.toResponseDTO(clientRepository.save(updatedClient));
+        if (!isPaymentMethodValid(client.getPaymentMethod())) {
+            throw new PaymentMethodException(PaymentMethodException.PAYMENT_INFORMATION_INVALID);
+        }
+        
+        return ClientMapper.toResponseDTO(clientRepository.save(client));
     }
 
     public AuthorizationResponse login(String email, String password) {
@@ -65,12 +90,21 @@ public class ClientService {
 
     public Client updatePaymentMethod(String username, PaymentMethod paymentMethod) {
         Client client = getClientByUsername(username);
+        System.out.println(client);
         if (!isValidCardNumber(paymentMethod.getCardNumber())) {
             throw new PaymentMethodException(PaymentMethodException.CARD_NUMBER_INVALID);
         }
 
         if (!isValidExpirationDate(paymentMethod.getExpirationDate())) {
             throw new PaymentMethodException(PaymentMethodException.EXPIRATION_DATE_INVALID);
+        }
+
+        try {
+            paymentMethod.setCardNumber(encryptCardNumber(paymentMethod.getCardNumber()));
+            paymentMethod.setCvv(encrypt(encrypt(paymentMethod.getCvv())));
+            paymentMethod.setExpirationDate(encrypt(paymentMethod.getExpirationDate()));
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         client.setPaymentMethod(paymentMethod);
@@ -104,7 +138,29 @@ public class ClientService {
         return token;
     }
 
+    public boolean isPaymentMethodValid(PaymentMethod paymentMethod) {
+
+        if (!isValidCardNumber(paymentMethod.getCardNumber())) {
+            return false;
+        }
+
+        if (!isValidExpirationDate(paymentMethod.getExpirationDate())) {
+            return false;
+        }
+
+        if (paymentMethod.getCvv() == null) {
+            return false;
+        }
+
+        return true;
+    }
+
     private boolean isValidCardNumber(String cardNumber) {
+
+        if (cardNumber == null) {
+            return false;
+        }
+
         int sum = 0;
         boolean isSecondDigit = false;
         for (int i = cardNumber.length() - 1; i >= 0; i--) {
@@ -120,9 +176,13 @@ public class ClientService {
 
     public boolean isValidExpirationDate(String dateString) {
 
+        if (dateString == null) {
+            return false;
+        }
+
         if (dateString.length() != 5 || !dateString.contains("/")) {
             return false;
-        } 
+        }
 
         if (!Character.toString(dateString.charAt(2)).equals("/")) {
             return false;
@@ -140,7 +200,7 @@ public class ClientService {
                 return true;
             } else if (expirationYear == currentYear && expirationMonth > currentMonth) {
                 return true;
-            } else {    
+            } else {
                 return false;
             }
         } catch (DateTimeParseException e) {
@@ -186,5 +246,23 @@ public class ClientService {
 
         return new Client(username, firstName, lastName, email, passwordHash, country, phoneNumber, birthDate,
                 shippingAddress, paymentMethod);
+    }
+
+    public String encrypt(String plaintext) throws Exception {
+        String key = System.getenv("AES_KEY");
+        Key secretKey = new SecretKeySpec(key.getBytes(), "AES");
+        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+        cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+        byte[] encryptedBytes = cipher.doFinal(plaintext.getBytes());
+        return Base64.getEncoder().encodeToString(encryptedBytes);
+    }
+
+    public String decrypt(String ciphertext) throws Exception {
+        String key = System.getenv("AES_KEY");
+        Key secretKey = new SecretKeySpec(key.getBytes(), "AES");
+        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+        cipher.init(Cipher.DECRYPT_MODE, secretKey);
+        byte[] decryptedBytes = cipher.doFinal(Base64.getDecoder().decode(ciphertext));
+        return new String(decryptedBytes);
     }
 }

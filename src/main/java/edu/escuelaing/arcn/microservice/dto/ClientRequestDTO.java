@@ -7,7 +7,7 @@ import edu.escuelaing.arcn.microservice.domain.model.ShippingAddress;
 
 @Data
 public class ClientRequestDTO {
-    private String id;
+    private String _id;
     private final String username;
     private final String firstName;
     private final String lastName;
