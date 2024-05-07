@@ -39,7 +39,7 @@ public class ClientService {
         String password = BCrypt.hashpw(client.getPasswordHash(), BCrypt.gensalt(15));
 
         client.setPasswordHash(password);
-        
+
         try {
             client.getPaymentMethod().setCardNumber(encryptCardNumber(client.getPaymentMethod().getCardNumber()));
             client.getPaymentMethod().setCvv(encrypt(client.getPaymentMethod().getCvv()));
@@ -54,20 +54,18 @@ public class ClientService {
     public String encryptCardNumber(String cardNumber) throws Exception {
         String lastFourNumbers = cardNumber.substring(12, 16);
         String firstTwelveNumbers = cardNumber.substring(0, 12);
-        
+
         String firstTwelveNumbersEncrypted = encrypt(firstTwelveNumbers);
 
-        return firstTwelveNumbersEncrypted+lastFourNumbers;
+        return firstTwelveNumbersEncrypted + lastFourNumbers;
     }
 
     public ClientResponseDTO updateClient(Client client) {
 
-        System.out.println(client);
-
         if (!isPaymentMethodValid(client.getPaymentMethod())) {
             throw new PaymentMethodException(PaymentMethodException.PAYMENT_INFORMATION_INVALID);
         }
-        
+
         return ClientMapper.toResponseDTO(clientRepository.save(client));
     }
 
@@ -90,7 +88,6 @@ public class ClientService {
 
     public Client updatePaymentMethod(String username, PaymentMethod paymentMethod) {
         Client client = getClientByUsername(username);
-        System.out.println(client);
         if (!isValidCardNumber(paymentMethod.getCardNumber())) {
             throw new PaymentMethodException(PaymentMethodException.CARD_NUMBER_INVALID);
         }
@@ -148,7 +145,7 @@ public class ClientService {
             return false;
         }
 
-        if (paymentMethod.getCvv() == null) {
+        if (paymentMethod.getCvv() == null || paymentMethod.getCvv().length() != 3) {
             return false;
         }
 
@@ -251,7 +248,7 @@ public class ClientService {
     public String encrypt(String plaintext) throws Exception {
         String key = System.getenv("AES_KEY");
         Key secretKey = new SecretKeySpec(key.getBytes(), "AES");
-        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+        Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
         cipher.init(Cipher.ENCRYPT_MODE, secretKey);
         byte[] encryptedBytes = cipher.doFinal(plaintext.getBytes());
         return Base64.getEncoder().encodeToString(encryptedBytes);
@@ -260,7 +257,7 @@ public class ClientService {
     public String decrypt(String ciphertext) throws Exception {
         String key = System.getenv("AES_KEY");
         Key secretKey = new SecretKeySpec(key.getBytes(), "AES");
-        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+        Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
         cipher.init(Cipher.DECRYPT_MODE, secretKey);
         byte[] decryptedBytes = cipher.doFinal(Base64.getDecoder().decode(ciphertext));
         return new String(decryptedBytes);
