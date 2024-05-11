@@ -31,6 +31,7 @@ public class ClientController {
     public ResponseEntity<ClientResponseDTO> registerClient(@RequestBody ClientRequestDTO clientRequestDTO) {
         try {
             Client client = ClientMapper.toEntity(clientRequestDTO);
+            System.out.println(client);
             ClientResponseDTO createdClient = clientService.registerClient(client);
             return new ResponseEntity<>(createdClient, HttpStatus.CREATED);
         } catch (ClientServiceException e) {

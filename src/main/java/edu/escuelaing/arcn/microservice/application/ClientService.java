@@ -45,6 +45,8 @@ public class ClientService {
             client.getPaymentMethod().setCvv(encrypt(client.getPaymentMethod().getCvv()));
             client.getPaymentMethod().setExpirationDate(encrypt(client.getPaymentMethod().getExpirationDate()));
         } catch (Exception e) {
+            System.out.println("Failed here!");
+            e.printStackTrace();
             throw new PaymentMethodException(PaymentMethodException.PAYMENT_INFORMATION_INVALID);
         }
 
@@ -107,6 +109,10 @@ public class ClientService {
 
         if (!isValidExpirationDate(paymentMethod.getExpirationDate())) {
             throw new PaymentMethodException(PaymentMethodException.EXPIRATION_DATE_INVALID);
+        }
+
+        if (paymentMethod.getCvv().length() != 3) {
+            throw new PaymentMethodException(PaymentMethodException.CVV_NUMER_IS_INVALID);
         }
 
         try {
