@@ -45,8 +45,6 @@ public class ClientService {
             client.getPaymentMethod().setCvv(encrypt(client.getPaymentMethod().getCvv()));
             client.getPaymentMethod().setExpirationDate(encrypt(client.getPaymentMethod().getExpirationDate()));
         } catch (Exception e) {
-            System.out.println("Failed here!");
-            e.printStackTrace();
             throw new PaymentMethodException(PaymentMethodException.PAYMENT_INFORMATION_INVALID);
         }
 
