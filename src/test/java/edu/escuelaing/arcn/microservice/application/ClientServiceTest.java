@@ -9,6 +9,7 @@ import edu.escuelaing.arcn.microservice.domain.model.ShippingAddress;
 import edu.escuelaing.arcn.microservice.domain.repository.ClientRepository;
 import edu.escuelaing.arcn.microservice.dto.AuthorizationResponse;
 import edu.escuelaing.arcn.microservice.dto.ClientResponseDTO;
+import edu.escuelaing.arcn.microservice.infrastructure.inbound.ClientController;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -189,7 +190,7 @@ class ClientServiceTest {
     }
 
     @Test
-    public void testLogin() {
+    public void Should_Login() {
         PaymentMethod paymentMethod = new PaymentMethod("5429264884032453",
                 "11/32",
                 "John Doe", "123");
@@ -269,6 +270,32 @@ class ClientServiceTest {
     }
 
     @Test
+    void Should_UpdateShippingAddress() {
+        PaymentMethod paymentMethod = new PaymentMethod("5429264884032453",
+                "11/32",
+                "John Doe", "123");
+
+        ShippingAddress shippingAddress = new ShippingAddress("John Doe", "3132105755", "cr 104 cll 148",
+                "111111",
+                "bogota");
+
+        LocalDate birthDate = LocalDate.of(2003, Month.JULY, 8);
+
+        Client expectedClient = new Client("john_doe_arcn", "John", "Doe", "miguel@example.com",
+                BCrypt.hashpw("password", BCrypt.gensalt(15)), "colombia",
+                "3132105755", birthDate, shippingAddress, paymentMethod);
+
+        when(clientRepository.findByUsername(expectedClient.getUsername()))
+                .thenReturn(Optional.of(expectedClient));
+        when(clientRepository.save(any(Client.class))).thenReturn(expectedClient);
+
+        Client client = clientService.updateShippingAddress(expectedClient.getUsername(), shippingAddress);
+
+        assertEquals(expectedClient, client);
+    }
+
+
+    @Test
     void Should_ReturnFalse_IfExpirationDateIsWrong() {
         assertFalse(clientService.isValidExpirationDate("07/23"));
         assertFalse(clientService.isValidExpirationDate("0723"));
@@ -302,5 +329,16 @@ class ClientServiceTest {
         assertTrue(clientService.isPaymentMethodValid(new PaymentMethod("5429264884032453",
                 "11/32",
                 "John Doe", "123")));
+    }
+
+    @Test
+    void ShouldEncrypt(){
+        String encryptedText = "I47cZPNdrlO+6Jqol5mpAv1AZfYbB+yFGtX+FX8DT8xNEExpNHba";
+        String expectedResponse = "Miguel Ángel Salamanca";
+
+        try {
+            assertEquals(expectedResponse, clientService.decrypt(encryptedText));
+        } catch (Exception e) {
+        }
     }
 }
