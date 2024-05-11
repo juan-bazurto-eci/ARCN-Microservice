@@ -217,9 +217,7 @@ public class ClientService {
             } else {
                 return false;
             }
-        } catch (DateTimeParseException e) {
-            return false;
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException  | DateTimeParseException e) {
             return false;
         }
     }
